@@ -1,8 +1,12 @@
 <?php
 namespace core;
 
+use core\classes\AdminPassport;
 use wulaphp\app\App;
 use wulaphp\app\Module;
+use wulaphp\auth\Passport;
+use wulaphp\io\Response;
+use wulaphp\router\Router;
 
 class CoreModule extends Module {
 	public function getName() {
@@ -15,6 +19,39 @@ class CoreModule extends Module {
 
 	public function getHomePageURL() {
 		return 'https://www.wulacms.com/modules/core';
+	}
+
+	/**
+	 * @param Passport $passport
+	 *
+	 * @filter passport\newAdminPassport
+	 *
+	 * @return Passport
+	 */
+	public static function createAdminPassport($passport) {
+		if ($passport == null) {
+			$passport = new AdminPassport();
+		}
+
+		return $passport;
+	}
+
+	/**
+	 * @bind router\beforeDispatch
+	 */
+	public static function beforeDispatch($router) {
+		if (!WULACMF_INSTALLED) {
+			$installURL = App::url('core/install');
+			if (WWWROOT_DIR != '/') {
+				$regURL = substr($installURL, strlen(WWWROOT_DIR) - 1);
+			} else {
+				$regURL = $installURL;
+			}
+			$regURL = ltrim($regURL, '/');
+			if (!Router::is($regURL . '(/.*)?', true)) {
+				Response::redirect($installURL);
+			}
+		}
 	}
 }
 
