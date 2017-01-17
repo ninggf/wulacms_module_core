@@ -2,13 +2,13 @@
 namespace core;
 
 use core\classes\AdminPassport;
+use wula\cms\CmfModule;
 use wulaphp\app\App;
-use wulaphp\app\Module;
 use wulaphp\auth\Passport;
 use wulaphp\io\Response;
 use wulaphp\router\Router;
 
-class CoreModule extends Module {
+class CoreModule extends CmfModule {
 	public function getName() {
 		return '内核';
 	}
@@ -29,7 +29,7 @@ class CoreModule extends Module {
 	 * @return Passport
 	 */
 	public static function createAdminPassport($passport) {
-		if ($passport == null) {
+		if ($passport instanceof Passport) {
 			$passport = new AdminPassport();
 		}
 

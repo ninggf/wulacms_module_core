@@ -15,11 +15,12 @@ namespace core\classes;
 use wulaphp\auth\Passport;
 
 class AdminPassport extends Passport {
-	public function cando($res, $extra = null) {
+
+	public function is($roles) {
 		return true;
 	}
 
-	public function is($roles) {
+	protected function checkAcl($res, $extra) {
 		return true;
 	}
 
