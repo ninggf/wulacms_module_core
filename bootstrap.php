@@ -36,6 +36,12 @@ class CoreModule extends CmfModule {
 		return $passport;
 	}
 
+	public function getVersionList() {
+		$v['1.0.0'] = '';
+
+		return $v;
+	}
+
 	/**
 	 * @bind router\beforeDispatch
 	 */
