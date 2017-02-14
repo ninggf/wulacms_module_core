@@ -46,11 +46,10 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `user` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户ID',
     `username` VARCHAR(32) NOT NULL COMMENT '用户名',
     `nickname` VARCHAR(32) NULL COMMENT '昵称',
-    `password` CHAR(32) NULL COMMENT '密码',
     `lastip` VARCHAR(64) NOT NULL DEFAULT '127.0.0.1' COMMENT '上次登录IP',
     `lastlogin` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '上次登录时间',
     `status` SMALLINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '1正常,0禁用,2密码过期',
-    `salt` VARCHAR(256) NOT NULL COMMENT '密码盐',
+    `hash` VARCHAR(255) NOT NULL COMMENT '密码HASH',
     PRIMARY KEY (`id`),
     UNIQUE INDEX `UDX_USERNAME` (`username` ASC),
     INDEX `IDX_STATUS` (`status` ASC)
@@ -99,6 +98,7 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `syslog` (
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='系统日志表'";
 
 $tables['1.0.0'][] = "INSERT INTO `role` (`id`,`name`,`note`) VALUES (1,'网站所有者','拥有所有权限')";
+$tables['1.0.0'][] = "INSERT INTO `role` (`id`,`name`,`note`) VALUES (2,'管理员','网站管理员')";
 
 $tables['1.0.0'][] = "INSERT INTO `acl` (`role_id`,`op`,`resid`,`res`,`allowed`,`priority`) VALUES (1,'*','*','*',1,1)";
 
