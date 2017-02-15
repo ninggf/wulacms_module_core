@@ -12,13 +12,6 @@ namespace core\model;
 
 use wulaphp\db\Table;
 
-class RoleTable extends Table {
+class AclTable extends Table {
 
-	public function users() {
-		return $this->belongsToMany('core\model\UserTable', 'user_role');
-	}
-
-	public function acls() {
-		return $this->hasMany('core\model\AclTable');
-	}
 }

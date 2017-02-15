@@ -35,9 +35,9 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `settings` (
 
 $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `role` (
     `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `upid` SMALLINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '继承角色',
     `name` VARCHAR(64) NOT NULL COMMENT '角色名称',
     `note` VARCHAR(256) NULL COMMENT '说明',
-    `fromids` TEXT NULL COMMENT '继承角色的ID列',
     PRIMARY KEY (`id`),
     UNIQUE INDEX `UDX_NAME` (`name` ASC)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='用户角色'";
@@ -78,7 +78,7 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `acl` (
     `resid` CHAR(32) NOT NULL COMMENT '资源ID的MD5码',
     `res` VARCHAR(1024) NOT NULL COMMENT '资源ID',
     `allowed` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否允许',
-    `priority` SMALLINT UNSIGNED NOT NULL DEFAULT 999 COMMENT '优先级,值越小优先级越高',
+    `priority` SMALLINT UNSIGNED NOT NULL DEFAULT 999 COMMENT '优先级，数值越大优先级越小',
     `extra` TEXT NULL COMMENT '额外配置的数据，JSON格式.',
     PRIMARY KEY (`id`),
     UNIQUE INDEX `UDX_ROLE_RES` (`role_id` ASC , `op` ASC , `resid` ASC),
@@ -97,8 +97,5 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `syslog` (
     INDEX `IDX_TIME` (`time` ASC , `user_id` ASC)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='系统日志表'";
 
-$tables['1.0.0'][] = "INSERT INTO `role` (`id`,`name`,`note`) VALUES (1,'网站所有者','拥有所有权限')";
-$tables['1.0.0'][] = "INSERT INTO `role` (`id`,`name`,`note`) VALUES (2,'管理员','网站管理员')";
-
-$tables['1.0.0'][] = "INSERT INTO `acl` (`role_id`,`op`,`resid`,`res`,`allowed`,`priority`) VALUES (1,'*','*','*',1,1)";
-
+$tables['1.0.0'][] = "INSERT INTO `role` (`id`,`upid`,`name`,`note`) VALUES (1,0,'管理员','网站管理员'),(2,1,'网站所有者','拥有所有权限')";
+$tables['1.0.0'][] = "INSERT INTO `acl` (`role_id`,`op`,`resid`,`res`,`allowed`,`priority`) VALUES (2,'*','*','*',1,0)";
