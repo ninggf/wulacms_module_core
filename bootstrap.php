@@ -2,6 +2,7 @@
 namespace core;
 
 use core\classes\AdminPassport;
+use dashboard\classes\DashboardUI;
 use wula\cms\CmfModule;
 use wulaphp\app\App;
 use wulaphp\auth\Passport;
@@ -34,6 +35,26 @@ class CoreModule extends CmfModule {
 		}
 
 		return $passport;
+	}
+
+	/**
+	 * @param DashboardUI $ui
+	 *
+	 * @bind dashboard\initUI
+	 */
+	public static function initDashboard(DashboardUI $ui) {
+		$system = $ui->getMenu('system');
+		$module = $system->getMenu('module');
+
+		$account       = $system->getMenu('account');
+		$account->name = '账户';
+		$account->pos  = 1;
+		$account->icon = 'fa fa-id-card-o';
+
+		$module->name = '模块';
+		$module->icon = 'fa fa-cubes';
+		$module->pos  = 10;
+
 	}
 
 	public function getVersionList() {
