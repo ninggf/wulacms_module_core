@@ -15,10 +15,10 @@ use wulaphp\db\Table;
 class RoleTable extends Table {
 
 	public function users() {
-		return $this->belongsToMany('core\model\UserTable', 'user_role');
+		return $this->belongsToMany(new UserTable($this), 'user_role');
 	}
 
 	public function acls() {
-		return $this->hasMany('core\model\AclTable');
+		return $this->hasMany(new AclTable($this));
 	}
 }

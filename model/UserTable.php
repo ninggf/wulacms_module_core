@@ -15,6 +15,7 @@ use wulaphp\db\Table;
 class UserTable extends Table {
 
 	public function roles() {
-		return $this->belongsToMany('core\model\RoleTable', 'user_role');
+
+		return $this->belongsToMany(new RoleTable($this), 'user_role');
 	}
 }
