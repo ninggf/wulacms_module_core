@@ -1,4 +1,5 @@
 <?php
+
 namespace core;
 
 use core\classes\AdminPassport;
@@ -43,18 +44,44 @@ class CoreModule extends CmfModule {
 	 * @bind dashboard\initUI
 	 */
 	public static function initDashboard(DashboardUI $ui) {
-		$system = $ui->getMenu('system');
-		$module = $system->getMenu('module');
+		$passport = whoami('admin');
+		if ($passport->cando('m:system')) {
+			$system = $ui->getMenu('system');
 
-		$account       = $system->getMenu('account');
-		$account->name = '账户';
-		$account->pos  = 1;
-		$account->icon = 'fa fa-id-card-o';
+			$account       = $system->getMenu('account');
+			$account->name = '账户';
+			$account->pos  = 1;
+			$account->icon = 'fa fa-id-card-o';
 
-		$module->name = '模块';
-		$module->icon = 'fa fa-cubes';
-		$module->pos  = 10;
+			if ($passport->cando('m:system/module')) {
+				$module       = $system->getMenu('module');
+				$module->name = '模块';
+				$module->url  = App::hash('~core/module/installed');
+				$module->icon = 'fa fa-cubes';
+				$module->pos  = 10;
+				$module->badge = '5';
 
+				$m            = $module->getMenu('installed');
+				$m->name      = '已安装模块';
+				$m->url       = $module->url;
+				$m->iconStyle = 'color:green';
+				$m->icon      = 'fa fa-cubes';
+				$m->pos       = 1;
+
+				$m       = $module->getMenu('new');
+				$m->name = '未安装模块';
+				$m->icon = 'fa fa-cubes';
+				$m->pos  = 2;
+
+				$m            = $module->getMenu('up');
+				$m->name      = '可升级模块';
+				$m->badge     = '5';
+				$m->iconStyle = 'color:orange';
+				$m->icon      = 'fa fa-cubes';
+				$m->pos       = 3;
+
+			}
+		}
 	}
 
 	public function getVersionList() {
