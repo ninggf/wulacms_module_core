@@ -1,12 +1,12 @@
-<div id="installed-modules">
+<div id="modules-app">
     <wula-console-title>
         已安装模块
     </wula-console-title>
-    <wula-ajax-table :table-data="modules" :is-group="true" :is-ajax="false" :none-border="true" url="{$table->url}">
+    <wula-ajax-table :table-data="modules" :is-group="true" :is-ajax="false" :none-border="true" url="{$table->url}" @on-row-click="onRowClick">
         <template slot="search">
             <Form-item prop="group" label="分组" :label-width="40">
                 <i-select v-model="modules.forms.group">
-                    <i-option v-for="gp in groups" value="gp">{{ gp }}</i-option>
+                    <i-option v-for="gp in groups" value="gp.id">{{ gp.text }}</i-option>
                 </i-select>
             </Form-item>
             <Form-item prop="name" label="名称" :label-width="80">
@@ -17,8 +17,8 @@
     </wula-ajax-table>
 </div>
 <script>
-	var vm = new Vue({
-		el     : '#installed-modules',
+	 new Vue({
+		el     : '#modules-app',
 		data   : {
 			groups:{$groups},
 			modules: {
@@ -32,7 +32,7 @@
 			}
 		},
         methods:{
-			onRowClick:function(row){
+			'onRowClick': function(row){
                 if(row.detail){
                    window.location.href = row.detail;
                 }

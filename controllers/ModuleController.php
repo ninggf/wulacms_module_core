@@ -11,7 +11,7 @@
 namespace core\controllers;
 
 use dashboard\classes\BackendController;
-use wula\form\UiGroupTable;
+use wula\ui\UiGroupTable;
 use wulaphp\app\App;
 
 /**
@@ -25,7 +25,7 @@ class ModuleController extends BackendController {
 		$modules = [];
 		foreach (App::modules($type) as $m) {
 			$gp        = $m->group;
-			$modules[] = $gp;
+			$modules[] = ['id' => $gp, 'text' => $gp];
 		}
 		$uitable[] = ['key' => 'name', 'title' => '名称', 'sortable' => true, 'width' => 180];
 		$uitable[] = ['key' => 'desc', 'title' => '描述'];
