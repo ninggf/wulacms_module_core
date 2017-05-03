@@ -10,6 +10,11 @@ use wulaphp\auth\Passport;
 use wulaphp\io\Response;
 use wulaphp\router\Router;
 
+/**
+ * Class CoreModule
+ * @package core
+ * @group   core
+ */
 class CoreModule extends CmfModule {
 	public function getName() {
 		return '内核';
@@ -49,16 +54,16 @@ class CoreModule extends CmfModule {
 			$system = $ui->getMenu('system');
 
 			$account       = $system->getMenu('account');
-			$account->name = '账户';
+			$account->name = '账户与权限';
 			$account->pos  = 1;
 			$account->icon = 'fa fa-id-card-o';
 
 			if ($passport->cando('m:system/module')) {
-				$module       = $system->getMenu('module');
-				$module->name = '模块';
-				$module->url  = App::hash('~core/module/installed');
-				$module->icon = 'fa fa-cubes';
-				$module->pos  = 10;
+				$module        = $system->getMenu('module');
+				$module->name  = '模块&扩展';
+				$module->url   = App::hash('~core/module/installed');
+				$module->icon  = 'fa fa-cubes';
+				$module->pos   = 10;
 				$module->badge = '5';
 
 				$m            = $module->getMenu('installed');
@@ -71,11 +76,13 @@ class CoreModule extends CmfModule {
 				$m       = $module->getMenu('new');
 				$m->name = '未安装模块';
 				$m->icon = 'fa fa-cubes';
+				$m->url  = App::hash('~core/module/uninstalled');
 				$m->pos  = 2;
 
-				$m            = $module->getMenu('up');
-				$m->name      = '可升级模块';
-				$m->badge     = '5';
+				$m       = $module->getMenu('up');
+				$m->name = '可升级模块';
+
+				$m->url       = App::hash('~core/module/upgradable');
 				$m->iconStyle = 'color:orange';
 				$m->icon      = 'fa fa-cubes';
 				$m->pos       = 3;
