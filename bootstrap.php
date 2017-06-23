@@ -64,7 +64,7 @@ class CoreModule extends CmfModule {
 				$module->url   = App::hash('~core/module/installed');
 				$module->icon  = 'fa fa-cubes';
 				$module->pos   = 10;
-				$module->badge = '5';
+				$module->badge = count(App::modules('upgradable'));
 
 				$m            = $module->getMenu('installed');
 				$m->name      = '已安装模块';
@@ -79,20 +79,23 @@ class CoreModule extends CmfModule {
 				$m->url  = App::hash('~core/module/uninstalled');
 				$m->pos  = 2;
 
-				$m       = $module->getMenu('up');
-				$m->name = '可升级模块';
-
-				$m->url       = App::hash('~core/module/upgradable');
-				$m->iconStyle = 'color:orange';
-				$m->icon      = 'fa fa-cubes';
-				$m->pos       = 3;
+				if ($module->badge > 0) {
+					$m            = $module->getMenu('up');
+					$m->name      = '可升级模块';
+					$m->badge     = $module->badge;
+					$m->url       = App::hash('~core/module/upgradable');
+					$m->iconStyle = 'color:orange';
+					$m->icon      = 'fa fa-cubes';
+					$m->pos       = 3;
+				}
 
 			}
 		}
 	}
 
 	public function getVersionList() {
-		$v['1.0.0'] = '';
+		$v['1.0.0'] = '初始化内核模块';
+		$v['1.0.1'] = ['第二个版本', '没啥事，测试用'];
 
 		return $v;
 	}

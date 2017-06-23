@@ -16,7 +16,6 @@ use core\model\AclTable;
 use core\model\RoleTable;
 use core\model\UserTable;
 use wulaphp\auth\Passport;
-use wulaphp\io\Request;
 
 class AdminPassport extends Passport {
 
@@ -84,19 +83,19 @@ class AdminPassport extends Passport {
 		$table = new UserTable();
 		$user  = $table->get(['username' => $username]);
 		if ($user['username'] != $username) {
-			$this->error = '用户名或密码错';
+			$this->error = __('You entered an incorrect username or password.');
 
 			return false;
 		}
 		$passwdCheck = Passport::verify($password, $user['hash']);
 		if (!$passwdCheck) {
-			$this->error = '用户名或密码错';
+			$this->error = __('You entered an incorrect username or password.');
 
 			return false;
 		}
 		$status = $user['status'];
 		if ($status == '0') {
-			$this->error = '你已经被禁用，请联系管理员.';
+			$this->error = __('Your account is locked.');
 
 			return false;
 		}
@@ -120,7 +119,7 @@ class AdminPassport extends Passport {
 
 		$this->data['roles1'] = array_unique($this->data['roles1']);
 
-		$table->update(['lastip' => Request::getIp(), 'lastlogin' => time()], ['id' => $this->uid]);
+		$table->updateLoginInfo($this->uid);
 
 		return true;
 	}

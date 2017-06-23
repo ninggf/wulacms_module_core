@@ -11,8 +11,10 @@
 namespace core\controllers;
 
 use dashboard\classes\BackendController;
+use Michelf\MarkdownExtra;
 use wula\ui\UiGroupTable;
 use wulaphp\app\App;
+use wulaphp\io\Ajax;
 
 /**
  * Class ModuleController
@@ -27,12 +29,13 @@ class ModuleController extends BackendController {
 			$gp        = $m->group;
 			$modules[] = ['id' => $gp, 'text' => $gp];
 		}
+		$title     = $type == 'installed' ? '已安装模块' : ($type == 'upgradable' ? '可升级模块' : '未安装模块');
 		$uitable[] = ['key' => 'name', 'title' => '名称', 'sortable' => true, 'width' => 180];
 		$uitable[] = ['key' => 'desc', 'title' => '描述'];
 		$uitable[] = ['key' => 'ver', 'title' => '版本', 'width' => 100];
 		$uitable[] = ['key' => 'author', 'title' => '作者', 'width' => 120];
 
-		return mustache(['table' => $uitable, 'groups' => json_encode(array_unique($modules))]);
+		return mustache(['title' => $title, 'type' => $type, 'table' => $uitable, 'groups' => json_encode(array_unique($modules))]);
 	}
 
 	public function data($type = 'installed', $group = '', $name = '') {
@@ -45,18 +48,35 @@ class ModuleController extends BackendController {
 			if ($name && strpos($info['name'], $name) === false) {
 				continue;
 			}
-			$info['detail'] = App::hash('~core/module/detail/' . $info['namespace']);
-			$modules[]      = $info;
+			$modules[] = $info;
 		}
-
-		$data                    = UiGroupTable::by($modules, 'group', 'name', count($modules) * 100);
+		$data                    = UiGroupTable::by($modules, 'group', 'name', count($modules));
 		$data->permits['delete'] = $this->passport->cando('d:system/module');
 
 		return $data;
 	}
 
 	public function detail($id, $type = '') {
+		$module = App::getModule($id);
+		if ($module) {
+			$data = $module->info();
+		} else {
+			return Ajax::error('模块不存在');
+		}
+		$dir     = $module->getPath();
+		$license = @file_get_contents($dir . '/LICENSE');
+		$doc     = @file_get_contents($dir . '/README.MD');
+		if ($doc) {
+			$docHtml = MarkdownExtra::defaultTransform($doc);
+		} else {
+			$docHtml = '';
+		}
+		$data['vers'] = array_reverse($module->getVersionList(), true);
 
-		return mustache();
+		$data['ops']    = $type;
+		$data['hasApi'] = is_dir($dir . '/apis/');
+		$data['ctab']   = 0;
+
+		return mustache(['module' => json_encode($data), 'license' => $license, 'docHtml' => $docHtml]);
 	}
 }

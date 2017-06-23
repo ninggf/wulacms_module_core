@@ -11,11 +11,21 @@
 namespace core\model;
 
 use wulaphp\db\Table;
+use wulaphp\io\Request;
 
 class UserTable extends Table {
 
 	public function roles() {
 
 		return $this->belongsToMany(new RoleTable($this), 'user_role');
+	}
+
+	/**
+	 * 更新用户最后登录信息.
+	 *
+	 * @param int $uid
+	 */
+	public function updateLoginInfo($uid) {
+		if ($uid) $this->update(['lastip' => Request::getIp(), 'lastlogin' => time()], ['id' => $uid]);
 	}
 }
