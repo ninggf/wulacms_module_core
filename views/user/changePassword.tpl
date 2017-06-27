@@ -19,22 +19,3 @@
     </Row>
 
 </div>
-<script>
-    new Vue({
-        el:'#change-password',
-        data:{
-			user:{
-				forms:{
-					old:'',
-					new_password:'',
-					confirm_password:''
-				},
-                rules:{
-					old:{
-						required: true, message: '请上传图片'
-					}
-				}
-			}
-		}
-	})
-</script>

@@ -70,12 +70,10 @@ class CoreModule extends CmfModule {
 				$m->name      = '已安装模块';
 				$m->url       = $module->url;
 				$m->iconStyle = 'color:green';
-				$m->icon      = 'fa fa-cubes';
 				$m->pos       = 1;
 
 				$m       = $module->getMenu('new');
 				$m->name = '未安装模块';
-				$m->icon = 'fa fa-cubes';
 				$m->url  = App::hash('~core/module/uninstalled');
 				$m->pos  = 2;
 
@@ -85,7 +83,6 @@ class CoreModule extends CmfModule {
 					$m->badge     = $module->badge;
 					$m->url       = App::hash('~core/module/upgradable');
 					$m->iconStyle = 'color:orange';
-					$m->icon      = 'fa fa-cubes';
 					$m->pos       = 3;
 				}
 
