@@ -92,7 +92,6 @@ class CoreModule extends CmfModule {
 
 	public function getVersionList() {
 		$v['1.0.0'] = '初始化内核模块';
-		$v['1.0.1'] = ['第二个版本', '没啥事，测试用'];
 
 		return $v;
 	}
