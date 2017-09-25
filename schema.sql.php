@@ -35,8 +35,8 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `settings` (
 
 $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `role` (
     `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `upid` SMALLINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '继承角色',
     `name` VARCHAR(64) NOT NULL COMMENT '角色名称',
+    `level` SMALLINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '角色的Level',
     `note` VARCHAR(256) NULL COMMENT '说明',
     PRIMARY KEY (`id`),
     UNIQUE INDEX `UDX_NAME` (`name` ASC)
@@ -46,6 +46,8 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `user` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户ID',
     `username` VARCHAR(32) NOT NULL COMMENT '用户名',
     `nickname` VARCHAR(32) NULL COMMENT '昵称',
+    `phone` VARCHAR(16) NULL COMMENT '手机号',
+    `email` VARCHAR(128) NULL COMMENT '邮箱地址',
     `lastip` VARCHAR(64) NOT NULL DEFAULT '127.0.0.1' COMMENT '上次登录IP',
     `lastlogin` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '上次登录时间',
     `status` SMALLINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '1正常,0禁用,2密码过期',
@@ -72,17 +74,12 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `user_meta` (
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='用户元数据'";
 
 $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `acl` (
-    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `role_id` SMALLINT UNSIGNED NOT NULL COMMENT '角色ID',
-    `op` VARCHAR(16) NOT NULL COMMENT '操作,*代表所有操作',
-    `resid` CHAR(32) NOT NULL COMMENT '资源ID的MD5码',
-    `res` VARCHAR(1024) NOT NULL COMMENT '资源ID',
+    `res` VARCHAR(64) NOT NULL COMMENT '资源ID',
     `allowed` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否允许',
     `priority` SMALLINT UNSIGNED NOT NULL DEFAULT 999 COMMENT '优先级，数值越大优先级越小',
     `extra` TEXT NULL COMMENT '额外配置的数据，JSON格式.',
-    PRIMARY KEY (`id`),
-    UNIQUE INDEX `UDX_ROLE_RES` (`role_id` ASC , `op` ASC , `resid` ASC),
-    UNIQUE INDEX `UDX_RESID` (`resid` ASC)
+    UNIQUE INDEX `UDX_ROLE_RES` (`role_id` ASC , `res` ASC)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='访问控制列表'";
 
 $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `syslog` (
@@ -97,5 +94,11 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `syslog` (
     INDEX `IDX_TIME` (`time` ASC , `user_id` ASC)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='系统日志表'";
 
-$tables['1.0.0'][] = "INSERT INTO `role` (`id`,`upid`,`name`,`note`) VALUES (1,0,'管理员','网站管理员'),(2,1,'网站所有者','拥有所有权限')";
-$tables['1.0.0'][] = "INSERT INTO `acl` (`role_id`,`op`,`resid`,`res`,`allowed`,`priority`) VALUES (2,'*','*','*',1,0)";
+$tables['1.0.0'][] = "INSERT INTO `role` (`id`,`name`,`note`) VALUES (2,'管理员','网站管理员'),(1,'站长','拥有所有权限')";
+
+$tables['1.1.0'][] = "CREATE TABLE `user_gridcfg` (
+  `uid` int(10) unsigned NOT NULL COMMENT '用户编号',
+  `grid` varchar(48) NOT NULL COMMENT '表格ID',
+  `columns` text COMMENT '显示列表',
+  PRIMARY KEY (`uid`,`grid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表格列'";

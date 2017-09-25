@@ -13,19 +13,22 @@
 namespace core\classes;
 
 use core\model\AclTable;
-use core\model\RoleTable;
 use core\model\UserTable;
 use wulaphp\auth\Passport;
 
 class AdminPassport extends Passport {
 
 	public function is($roles) {
-		$myroles = $this->data['roles1'];
+		// 1号用户为超级管理员
+		if ($this->uid == 1) {
+			return true;
+		}
+		$myroles = $this->data['roles'];
 		if (empty($myroles)) {
 			return false;
 		}
 
-		return !empty(array_intersect($myroles, $roles));
+		return !empty(array_intersect($myroles, (array)$roles));
 	}
 
 	/**
@@ -41,6 +44,10 @@ class AdminPassport extends Passport {
 	 */
 	protected function checkAcl($op, $res, $extra) {
 		static $checked = [];
+		//1号用户为超级管理员
+		if ($this->uid == 1) {
+			return true;
+		}
 		if (!isset($this->data['acls'])) {
 			$this->loadAcl();
 		}
@@ -48,24 +55,24 @@ class AdminPassport extends Passport {
 		if (!$this->data['acls']) {
 			return false;
 		}
-		$resid = $op . '@' . $res;
+		$resid = $op . ':' . $res;
 		if (isset($checked[ $resid ])) {
 			return $checked[ $resid ];
 		}
-		$reses[] = $op . '@' . $res;
+		$reses[] = $op . ':' . $res;
 		// 对资源的全部操作授权
-		$reses[] = '*@' . $res;
+		$reses[] = '*:' . $res;
 		$ress    = explode('/', $res);
 
 		if (count($ress) > 1) {
 			// 对上级资源的全部操作授权
 			while ($ress) {
 				array_pop($ress);
-				$reses[] = '*@' . implode('/', $ress);
+				$reses[] = '*:' . implode('/', $ress);
 			}
 		}
 		// 对所有资源的全部操作授权，特别是网站拥有者
-		$reses[] = '*@*';
+		$reses[] = '*:*';
 		// 权限检测.
 		foreach ($reses as $opres) {
 			if (isset($this->data['acls'][ $opres ])) {
@@ -103,22 +110,15 @@ class AdminPassport extends Passport {
 		$this->uid               = $user['id'];
 		$this->username          = $user['username'];
 		$this->nickname          = $user['nickname'];
+		$this->phone             = $user['phone'];
+		$this->email             = $user['email'];
 		$this->data['status']    = $user['status'];
 		$this->data['lastip']    = $user['lastip'];
 		$this->data['lastlogin'] = $user['lastlogin'];
-		$roleTable               = new RoleTable();
 		foreach ($user['roles'] as $r) {
-			$rid = $r['id'];
-			$rs  = [0 => $r];
-			$roleTable->select('id,upid,name')->recurse($rs);
-			$this->data['roles'][ $rid ] = $rs;
-			foreach ($rs as $rr) {
-				$this->data['roles1'][] = $rr['name'];
-			}
+			$rid                         = $r['id'];
+			$this->data['roles'][ $rid ] = $r['name'];
 		}
-
-		$this->data['roles1'] = array_unique($this->data['roles1']);
-
 		$table->updateLoginInfo($this->uid);
 
 		return true;
@@ -128,24 +128,18 @@ class AdminPassport extends Passport {
 	 * 加载ACL.
 	 */
 	private function loadAcl() {
-		$acls   = [];
-		$loaded = [];
+		$acls = [];
 		if ($this->data['roles']) {
 			$acl = new AclTable();
-			foreach ($this->data['roles'] as $roles) {
-				foreach ($roles as $role) {
-					if (isset($loaded[ $role['id'] ])) {
-						continue;
-					}
-					$loaded[ $role['id'] ] = 1;
-					$ac                    = $acl->findAll(['role_id' => $role['id']], 'op,res,allowed,priority');
-					foreach ($ac as $a) {
-						$res = $a['op'] . '@' . $a['res'];
-						if (!isset($acls[ $res ]) || $acls[ $res ]['priority'] > $a['priority']) {
-							$ra = $a->get();
-							unset($ra['op'], $ra['res']);
-							$acls[ $res ] = $ra;
-						}
+			foreach ($this->data['roles'] as $rid => $role) {
+				$ac = $acl->findAll(['role_id' => $rid], 'res,allowed,priority');
+				foreach ($ac as $a) {
+					$res = $a['res'];
+					//priority越小优先级越高.
+					if (!isset($acls[ $res ]) || $acls[ $res ]['priority'] > $a['priority']) {
+						$ra = $a->get();
+						unset($ra['res']);
+						$acls[ $res ] = $ra;
 					}
 				}
 			}

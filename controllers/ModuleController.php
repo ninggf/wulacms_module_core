@@ -11,10 +11,9 @@
 namespace core\controllers;
 
 use dashboard\classes\BackendController;
-use Michelf\MarkdownExtra;
-use wula\ui\UiGroupTable;
 use wulaphp\app\App;
 use wulaphp\io\Ajax;
+use wulaphp\util\ArrayCompare;
 
 /**
  * Class ModuleController
@@ -23,60 +22,114 @@ use wulaphp\io\Ajax;
  */
 class ModuleController extends BackendController {
 	public function index($type = 'installed') {
-		$uitable = new UiGroupTable('~core/module/data/' . $type);
-		$modules = [];
-		foreach (App::modules($type) as $m) {
-			$gp        = $m->group;
-			$modules[] = ['id' => $gp, 'text' => $gp];
+		$groups          = [];
+		$modules         = App::modules($type);
+		$upCount         = 0;
+		$data['modules'] = [];
+		foreach ($modules as $m) {
+			$gp                = $m->group;
+			$groups[ $gp ]     = $gp;
+			$data['modules'][] = $m->info();
+			if ($m->upgradable) {
+				$upCount++;
+			}
 		}
-		$title     = $type == 'installed' ? '已安装模块' : ($type == 'upgradable' ? '可升级模块' : '未安装模块');
-		$uitable[] = ['key' => 'name', 'title' => '名称', 'sortable' => true, 'width' => 180];
-		$uitable[] = ['key' => 'desc', 'title' => '描述'];
-		$uitable[] = ['key' => 'ver', 'title' => '版本', 'width' => 100];
-		$uitable[] = ['key' => 'author', 'title' => '作者', 'width' => 120];
+		usort($data['modules'], ArrayCompare::compare('status', 'd'));
+		$data['groups']  = $groups;
+		$data['type']    = $type;
+		$data['upCount'] = $upCount;
 
-		return mustache(['title' => $title, 'type' => $type, 'table' => $uitable, 'groups' => json_encode(array_unique($modules))]);
+		return view($data);
 	}
 
-	public function data($type = 'installed', $group = '', $name = '') {
-		$modules = [];
-		foreach (App::modules($type) as $m) {
-			$info = $m->info();
-			if ($group && !$info['group'] == $group) {
-				continue;
+	public function stop($module) {
+		$m = App::getModuleById($module);
+		if ($m) {
+			/**@var \wula\cms\CmfModule $m */
+			if ($m->isKernel) {
+				return Ajax::error('无法停用内核模块');
 			}
-			if ($name && strpos($info['name'], $name) === false) {
-				continue;
-			}
-			$modules[] = $info;
-		}
-		$data                    = UiGroupTable::by($modules, 'group', 'name', count($modules));
-		$data->permits['delete'] = $this->passport->cando('d:system/module');
+			$m->stop();
 
-		return $data;
+			return Ajax::reload('document', '停用成功');
+		} else {
+			return Ajax::error('要停用的模块不存在');
+		}
 	}
 
-	public function detail($id, $type = '') {
-		$module = App::getModule($id);
-		if ($module) {
-			$data = $module->info();
-		} else {
-			return Ajax::error('模块不存在');
-		}
-		$dir     = $module->getPath();
-		$license = @file_get_contents($dir . '/LICENSE');
-		$doc     = @file_get_contents($dir . '/README.MD');
-		if ($doc) {
-			$docHtml = MarkdownExtra::defaultTransform($doc);
-		} else {
-			$docHtml = '';
-		}
-		$data['vers'] = array_reverse($module->getVersionList(), true);
+	public function start($module) {
+		$m = App::getModuleById($module);
+		if ($m) {
+			/**@var \wula\cms\CmfModule $m */
+			$m->start();
 
-		$data['ops']    = $type;
-		$data['hasApi'] = is_dir($dir . '/apis/');
-		$data['ctab']   = 0;
+			return Ajax::reload('document', '启用成功');
+		} else {
+			return Ajax::error('要启用的模块不存在');
+		}
+	}
 
-		return mustache(['module' => json_encode($data), 'license' => $license, 'docHtml' => $docHtml]);
+	public function install($module) {
+		$m = App::getModuleById($module);
+		if ($m) {
+			try {
+				/**@var \wula\cms\CmfModule $m */
+				if ($m->install(App::db())) {
+					return Ajax::reload('document', '『' . $m->getName() . '』安装成功');
+				}
+
+				return Ajax::error('无法安装『' . $m->getName() . '』');
+			} catch (\PDOException $e) {
+				return Ajax::error($e->getMessage());
+			}
+		} else {
+			return Ajax::error('要安装的模块不存在');
+		}
+	}
+
+	public function uninstall($module) {
+		$m = App::getModuleById($module);
+		if ($m) {
+			/**@var \wula\cms\CmfModule $m */
+			if ($m->isKernel) {
+				return Ajax::error('无法卸载内核模块');
+			}
+			try {
+				/**@var \wula\cms\CmfModule $m */
+				if ($m->uninstall()) {
+					return Ajax::reload('document', '『' . $m->getName() . '』卸载成功');
+				}
+
+				return Ajax::error('无法卸载『' . $m->getName() . '』');
+			} catch (\PDOException $e) {
+				return Ajax::error($e->getMessage());
+			}
+		} else {
+			return Ajax::error('要卸载的模块不存在');
+		}
+	}
+
+	public function upgrade($module) {
+		$m = App::getModuleById($module);
+		if ($m) {
+			try {
+				/**@var \wula\cms\CmfModule $m */
+				if ($m->upgrade(App::db(), $m->getCurrentVersion(), $m->installedVersion)) {
+					return Ajax::reload('document', '『' . $m->getName() . '』升级成功');
+				}
+
+				return Ajax::error('无法升级『' . $m->getName() . '』');
+			} catch (\PDOException $e) {
+				return Ajax::error($e->getMessage());
+			}
+		} else {
+			return Ajax::error('要升级的模块不存在');
+		}
+	}
+
+	public function detail($module) {
+		$data = [];
+
+		return view();
 	}
 }
