@@ -33,7 +33,8 @@ class ChangePasswordForm extends FormTable {
 	 * @var \wula\ui\classes\PasswordField
 	 * @type string
 	 * @required
-	 * @minlength (6)
+	 * @minlength (8)
+	 * @password (3) => 必须由大、小写字母，符号，数字组成
 	 * @layout 2,col-xs-12 col-md-4
 	 */
 	public $newpwd;

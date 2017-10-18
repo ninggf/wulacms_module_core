@@ -15,10 +15,13 @@ use core\model\RoleTable;
 use core\model\UserTable;
 use dashboard\classes\BackendController;
 use wula\ui\classes\BootstrapFormRender;
+use wula\ui\classes\Plupload;
 use wulaphp\app\App;
 use wulaphp\auth\Passport;
 use wulaphp\db\DatabaseConnection;
 use wulaphp\io\Ajax;
+use wulaphp\io\LocaleUploader;
+use wulaphp\mvc\view\JsonView;
 use wulaphp\validator\JQueryValidatorController;
 use wulaphp\validator\ValidateException;
 
@@ -30,7 +33,7 @@ use wulaphp\validator\ValidateException;
  * @acl     m:system/account
  */
 class UsersController extends BackendController {
-	use JQueryValidatorController;
+	use JQueryValidatorController, Plupload;
 
 	public function index() {
 		$data           = [];
@@ -92,6 +95,7 @@ class UsersController extends BackendController {
 			if ($id != 1) {
 				$user['roles'] = $admin->roles()->toArray('id');
 			}
+			$data['avatar'] = $user['avatar'];
 			$form->inflateByData($user);
 			$form->removeRule('password', 'required');
 		}
@@ -122,6 +126,10 @@ class UsersController extends BackendController {
 				$rst = $form->updateAccount($user);
 			} else {
 				unset($user['id']);
+				$avatar = sess_del('uploaded_avatar');
+				if ($avatar) {
+					$user['avatar'] = $avatar;
+				}
 				$rst = $form->newAccount($user);
 			}
 			if (!$rst) {
@@ -189,5 +197,56 @@ class UsersController extends BackendController {
 		}
 
 		return Ajax::error('未指定用户');
+	}
+
+	/**
+	 * 更新头像.
+	 *
+	 * @param int $uid
+	 *
+	 * @return array|\wulaphp\mvc\view\JsonView
+	 */
+	public function updateAvatar($uid = 0) {
+		$rst = $this->upload(null, 512000);
+
+		if (isset($rst['error']) && $rst['error']['code'] == 422) {
+			return new JsonView($rst, [], 422);
+		}
+
+		if ($rst['done']) {
+			$url = $rst['result']['url'];
+			if ($uid) {
+				$table  = new UserTable();
+				$avatar = $table->get(['id' => $uid])['avatar'];
+				$table->updateAccount(['avatar' => $url, 'id' => $uid]);
+			} else {
+				$avatar = sess_get('uploaded_avatar');
+
+				$_SESSION['uploaded_avatar'] = $url;
+			}
+			if ($avatar && !preg_match('#^(/|https?://).+#', $avatar)) {
+				$locale = new LocaleUploader();
+				$locale->delete($avatar);
+			}
+		}
+
+		return $rst;
+	}
+
+	public function delAvatar($uid = '') {
+		if ($uid) {
+			$table  = new UserTable();
+			$avatar = $table->get(['id' => $uid])['avatar'];
+			$table->updateAccount(['avatar' => '', 'id' => $uid]);
+		} else {
+			$avatar = sess_del('uploaded_avatar');
+		}
+
+		if ($avatar && !preg_match('#^(/|https?://).+#', $avatar)) {
+			$locale = new LocaleUploader();
+			$locale->delete($avatar);
+		}
+
+		return Ajax::success();
 	}
 }

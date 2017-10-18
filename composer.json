@@ -4,7 +4,8 @@
   "type": "wula-module",
   "require": {
 	"wula/wula-installer": "^1.0",
-	"wula/wulaphp": "*"
+	"wula/wulaphp": "*",
+	"michelf/php-markdown": "^1.7"
   },
   "license": "MIT",
   "authors": [

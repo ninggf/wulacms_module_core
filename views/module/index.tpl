@@ -19,16 +19,16 @@
                 </ul>
             </header>
             <section class="scrollable bg-white-only">
-                <div class="tab-content">
-                    <div class="tab-pane active" id="module-list">
+                <div class="tab-content" style="height: 100%">
+                    <div class="tab-pane active" id="module-list" style="height: 100%">
                         <div class="table-responsive">
                             <table id="core-module-table" data-table style="min-width: 600px">
                                 <thead>
                                 <tr>
                                     <th width="100">名称</th>
                                     <th>描述</th>
-                                    <th width="120">版本</th>
-                                    <th width="150">作者</th>
+                                    <th width="100">版本</th>
+                                    <th width="120">作者</th>
                                     <th width="60"></th>
                                 </tr>
                                 </thead>
@@ -85,7 +85,7 @@
                             </table>
                         </div>
                     </div>
-                    <div class="tab-pane" id="module-detail" data-load data-lazy>
+                    <div class="tab-pane" style="height: 100%" id="module-detail" data-load data-lazy>
 
                     </div>
                 </div>
@@ -129,6 +129,9 @@
 		});
 		$('#module-tabs').find('li.m-l-lg a').click(function () {
 			$('#module-detail-tab').addClass('hidden');
+		});
+		$('#module-detail').on('ajax.error', function () {
+			$('#module-tabs').find('li.m-l-lg a').click();
 		});
     </script>
 </div>

@@ -26,7 +26,8 @@ class AdminForm extends UserTable {
 	 * @var \wula\ui\classes\PasswordField
 	 * @type string
 	 * @required
-	 * @minlength (6)
+	 * @minlength (8)
+	 * @passwd (3) => 必须由大、小写字母，符号，数字组成
 	 * @layout 4,col-xs-6
 	 */
 	public $password;

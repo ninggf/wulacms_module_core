@@ -23,14 +23,11 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `module` (
 
 $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `settings` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-    `group` VARCHAR(24) NOT NULL COMMENT '配置组',
+    `group` VARCHAR(64) NOT NULL COMMENT '配置组',
     `name` VARCHAR(32) NOT NULL COMMENT '字段名',
     `value` TEXT NULL COMMENT '值',
-    `auto` TINYINT(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '是否自动加载',
-    `type` ENUM('T', 'J', 'A') NOT NULL DEFAULT 'T' COMMENT '值类型',
     PRIMARY KEY (`id`),
-    UNIQUE INDEX `UDX_NAME` (`group` ASC , `name` ASC),
-    INDEX `IDX_AUTO` (`auto` ASC)
+    UNIQUE INDEX `UDX_NAME` (`group` ASC , `name` ASC)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='配置表'";
 
 $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `role` (
@@ -52,6 +49,7 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `user` (
     `lastlogin` INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '上次登录时间',
     `status` SMALLINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '1正常,0禁用,2密码过期',
     `hash` VARCHAR(255) NOT NULL COMMENT '密码HASH',
+    `avatar` VARCHAR(512) NULL COMMENT '头像',
     PRIMARY KEY (`id`),
     UNIQUE INDEX `UDX_USERNAME` (`username` ASC),
     INDEX `IDX_STATUS` (`status` ASC)

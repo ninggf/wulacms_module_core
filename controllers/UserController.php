@@ -14,8 +14,12 @@ use core\form\ChangePasswordForm;
 use core\model\UserTable;
 use dashboard\classes\BackendController;
 use wula\ui\classes\BootstrapFormRender;
+use wula\ui\classes\Plupload;
+use wulaphp\app\App;
 use wulaphp\auth\Passport;
 use wulaphp\io\Ajax;
+use wulaphp\io\LocaleUploader;
+use wulaphp\mvc\view\JsonView;
 use wulaphp\validator\JQueryValidatorController;
 use wulaphp\validator\ValidateException;
 
@@ -24,7 +28,7 @@ use wulaphp\validator\ValidateException;
  * @accept core\model\UserTable
  */
 class UserController extends BackendController {
-	use JQueryValidatorController;
+	use JQueryValidatorController, Plupload;
 
 	/**
 	 * 我的账户页面.
@@ -40,8 +44,54 @@ class UserController extends BackendController {
 		$pwdForm          = new ChangePasswordForm();
 		$data['pwdform']  = BootstrapFormRender::v($pwdForm);
 		$data['pwdrules'] = $pwdForm->encodeValidatorRule($this);
+		$data ['avatar']  = $this->passport->avatar;
 
 		return view($data);
+	}
+
+	/**
+	 * 更新头像.
+	 *
+	 * @param int $uid
+	 *
+	 * @return array|\wulaphp\mvc\view\JsonView
+	 */
+	public function updateAvatar($uid) {
+		$rst = $this->upload(null, 128000, $uid == $this->passport->uid);
+
+		if (isset($rst['error']) && $rst['error']['code'] == 422) {
+			return new JsonView($rst, [], 422);
+		}
+
+		if ($rst['done']) {
+			$url   = $rst['result']['url'];
+			$table = new UserTable();
+			$table->updateAccount(['avatar' => $url, 'id' => $uid]);
+			$this->passport->avatar = $url;
+			$this->passport->store();
+		}
+
+		return $rst;
+	}
+
+	/**
+	 * 删除头像.
+	 *
+	 * @return \wulaphp\mvc\view\JsonView
+	 */
+	public function delAvatar() {
+		$table = new UserTable();
+		$table->updateAccount(['avatar' => '', 'id' => $this->passport->uid]);
+		$avatar = $this->passport->avatar;
+		//如果是存在本地的头像，将它删除
+		if (!preg_match('#^(/|https?://).+#', $avatar)) {
+			$locale = new LocaleUploader();
+			$locale->delete($avatar);
+		}
+		$this->passport->avatar = App::assets('avatar.jpg');
+		$this->passport->store();
+
+		return Ajax::success('');
 	}
 
 	/**
@@ -109,5 +159,10 @@ class UserController extends BackendController {
 		} catch (\Exception $e) {
 			return Ajax::error($e->getMessage());
 		}
+	}
+
+	//允许上传的图片类型
+	protected function allowed($ext) {
+		return in_array($ext, ['.jpg', '.png', '.gif', '.jpeg']);
 	}
 }

@@ -11,6 +11,7 @@
 namespace core\controllers;
 
 use dashboard\classes\BackendController;
+use Michelf\MarkdownExtra;
 use wulaphp\app\App;
 use wulaphp\io\Ajax;
 use wulaphp\util\ArrayCompare;
@@ -128,8 +129,20 @@ class ModuleController extends BackendController {
 	}
 
 	public function detail($module) {
-		$data = [];
+		$m = App::getModuleById($module);
+		if ($m) {
+			$data['module']     = $m->info();
+			$data['changelogs'] = array_reverse($m->getVersionList(), true);
+			$path               = $m->getPath() . DS . 'README.md';
+			if (is_file($path)) {
+				$data['module']['doc'] = MarkdownExtra::defaultTransform(@file_get_contents($path));
+			} else {
+				$data['module']['doc'] = '此模块作者很懒，未提供任何文档，使用它全靠您蒙！';
+			}
 
-		return view();
+			return view($data);
+		}
+
+		return Ajax::fatal('模块不存在', 404);
 	}
 }

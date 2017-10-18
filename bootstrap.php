@@ -17,15 +17,15 @@ trait CoreHooks {
 	 * @bind rbac\initAdminManager
 	 */
 	public static function aclRes($manager) {
-		$res = $manager->getResource('system', '系统管理', 'm');
+		$manager->getResource('system', '系统管理', 'm');
 
 		$res = $manager->getResource('system/setting', '设置', 'm');
-		$res->addOperate('com', '通用设置');
+		$res->addOperate('default', '通用设置');
 
 		$res = $manager->getResource('system/account', '账户与权限', 'm');
 		$res->addOperate('acl', '授权');
 
-		$res = $manager->getResource('system/module', '模块&扩展', 'm');
+		$manager->getResource('system/module', '模块&扩展', 'm');
 
 	}
 

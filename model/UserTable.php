@@ -83,19 +83,16 @@ class UserTable extends FormTable {
 	 */
 	public function updateAccount($data) {
 		if (isset($data['roles'])) {
-			$rst = $this->dbconnection->trans(function (DatabaseConnection $db) use ($data) {
+			$rst = $this->trans(function (DatabaseConnection $db) use ($data) {
 				$id    = $data['id'];
 				$roles = $data['roles'];
 				unset($data['roles']);
-
 				if (!$this->update($data, ['id' => $id])) {
 					return false;
 				}
-
 				if (!$db->delete()->from('{user_role}')->where(['user_id' => $id])->exec()) {
 					return false;
 				}
-
 				if ($roles) {
 					$rs = [];
 					array_unique($roles);
@@ -106,20 +103,18 @@ class UserTable extends FormTable {
 						return false;
 					}
 				}
-
 				return true;
-			}, $this->errors);
-
+			});
 			return $rst;
 		} else {
 			$id = $data['id'];
-
 			return $this->update($data, ['id' => $id]);
 		}
 	}
 
 	public function newAccount($data) {
-		$id = $this->dbconnection->trans(function (DatabaseConnection $db) use ($data) {
+
+		$id = $this->trans(function (DatabaseConnection $db) use ($data) {
 			if (isset($data['roles'])) {
 				$roles = $data['roles'];
 				unset($data['roles']);
@@ -142,7 +137,7 @@ class UserTable extends FormTable {
 			}
 
 			return $id;
-		}, $this->errors);
+		});
 
 		return $id;
 	}
