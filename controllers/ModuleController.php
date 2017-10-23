@@ -133,9 +133,14 @@ class ModuleController extends BackendController {
 		if ($m) {
 			$data['module']     = $m->info();
 			$data['changelogs'] = array_reverse($m->getVersionList(), true);
-			$path               = $m->getPath() . DS . 'README.md';
+			$path               = $m->getPath('README.md');
 			if (is_file($path)) {
-				$data['module']['doc'] = MarkdownExtra::defaultTransform(@file_get_contents($path));
+				$content               = @file_get_contents($path);
+				$url                   = App::url('~');
+				$content               = preg_replace_callback('/\]\(#(?P<hash>[^\)]+)\)/', function ($ms) use ($url) {
+					return '](' . $url . App::hash($ms['hash']) . ')';
+				}, $content);
+				$data['module']['doc'] = MarkdownExtra::defaultTransform($content);
 			} else {
 				$data['module']['doc'] = '此模块作者很懒，未提供任何文档，使用它全靠您蒙！';
 			}

@@ -28,12 +28,11 @@
                             <input type="checkbox" name="status" value="0" onchange="$('#btn-do-search').click()"/> 被禁用的
                         </label>
                     </div>
-                    <div class="input-group">
+                    <div class="input-group input-group-sm">
                         <input type="text" name="q" class="input-sm form-control" placeholder="{'Search'|t}"/>
                         <span class="input-group-btn">
-                                            <button class="btn btn-sm btn-default" id="btn-do-search"
-                                                    type="submit">Go!</button>
-                                        </span>
+                            <button class="btn btn-sm btn-info" id="btn-do-search" type="submit">Go!</button>
+                        </span>
                     </div>
                 </form>
             </div>

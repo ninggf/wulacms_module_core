@@ -18,11 +18,10 @@
                class="text-warning edit-role" title="编辑"><i class="fa fa-pencil-square-o"></i></a>
             {if $canAcl}
                 <a href="{'~core/role/acl'|app}" data-ajax="update" data-ajax-done="hide:#admin-grid;show:#acl-space"
-                   target="#acl-space" class="m-r-xs m-l-xs" title="授权"><i class="fa fa-check-square-o"></i></a>
+                   target="#acl-space" class="m-r-xs m-l-xs" title="授权"><i class="fa fa-credit-card"></i></a>
             {/if}
             <a data-ajax href="{"~core/role/del"|app}" class="text-danger" title="删除" data-confirm="角色删除后将不可恢复!"><i
                         class="fa fa-trash-o"></i></a>
-
         </p>
     </div>
 </div>

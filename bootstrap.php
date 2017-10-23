@@ -22,10 +22,10 @@ trait CoreHooks {
 		$res = $manager->getResource('system/setting', '设置', 'm');
 		$res->addOperate('default', '通用设置');
 
-		$res = $manager->getResource('system/account', '账户与权限', 'm');
+		$res = $manager->getResource('system/account', '管理员', 'm');
 		$res->addOperate('acl', '授权');
 
-		$manager->getResource('system/module', '模块&扩展', 'm');
+		$manager->getResource('system/module', '模块', 'm');
 
 	}
 
@@ -130,14 +130,14 @@ class CoreModule extends CmfModule {
 			$system = $ui->getMenu('system');
 			if ($passport->cando('m:system/account')) {
 				$account       = $system->getMenu('account');
-				$account->name = '账户与权限';
+				$account->name = '管理员';
 				$account->url  = App::hash('~core/users');
 				$account->pos  = 1;
 				$account->icon = 'fa fa-id-card-o';
 			}
 			if ($passport->cando('m:system/module')) {
 				$module        = $system->getMenu('module');
-				$module->name  = '模块&扩展';
+				$module->name  = '模块';
 				$module->url   = App::hash('~core/module/installed');
 				$module->icon  = 'fa fa-cubes';
 				$module->pos   = 10;
