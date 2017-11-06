@@ -178,7 +178,7 @@ class CoreModule extends CmfModule {
 	 * @bind router\beforeDispatch
 	 */
 	public static function beforeDispatch($router) {
-		if (!WULACMF_INSTALLED) {
+		if (!WULACMF_INSTALLED && defined('WULACMF_WEB_INSTALLER')) {
 			$installURL = App::url('core/install');
 			if (WWWROOT_DIR != '/') {
 				$regURL = substr($installURL, strlen(WWWROOT_DIR) - 1);

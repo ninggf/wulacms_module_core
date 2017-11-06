@@ -13,6 +13,7 @@ namespace core\controllers;
 use dashboard\classes\BackendController;
 use Michelf\MarkdownExtra;
 use wulaphp\app\App;
+use wulaphp\cache\RtCache;
 use wulaphp\io\Ajax;
 use wulaphp\util\ArrayCompare;
 
@@ -51,6 +52,7 @@ class ModuleController extends BackendController {
 				return Ajax::error('无法停用内核模块');
 			}
 			$m->stop();
+			RtCache::delete('modules@cmf');
 
 			return Ajax::reload('document', '停用成功');
 		} else {
@@ -63,6 +65,7 @@ class ModuleController extends BackendController {
 		if ($m) {
 			/**@var \wula\cms\CmfModule $m */
 			$m->start();
+			RtCache::delete('modules@cmf');
 
 			return Ajax::reload('document', '启用成功');
 		} else {
@@ -76,6 +79,8 @@ class ModuleController extends BackendController {
 			try {
 				/**@var \wula\cms\CmfModule $m */
 				if ($m->install(App::db())) {
+					RtCache::delete('modules@cmf');
+
 					return Ajax::reload('document', '『' . $m->getName() . '』安装成功');
 				}
 
@@ -98,6 +103,8 @@ class ModuleController extends BackendController {
 			try {
 				/**@var \wula\cms\CmfModule $m */
 				if ($m->uninstall()) {
+					RtCache::delete('modules@cmf');
+
 					return Ajax::reload('document', '『' . $m->getName() . '』卸载成功');
 				}
 
@@ -116,6 +123,8 @@ class ModuleController extends BackendController {
 			try {
 				/**@var \wula\cms\CmfModule $m */
 				if ($m->upgrade(App::db(), $m->getCurrentVersion(), $m->installedVersion)) {
+					RtCache::delete('modules@cmf');
+
 					return Ajax::reload('document', '『' . $m->getName() . '』升级成功');
 				}
 
