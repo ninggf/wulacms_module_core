@@ -1,28 +1,28 @@
 <div class="hbox stretch wulaui">
     <section>
         <div class="vbox">
-            <header class="header clearfix bg-light dk b-b b-light">
-                <ul class="nav nav-tabs no-radius" id="module-tabs">
+            <header class="header clearfix bg-light dk b-b">
+                <ul class="nav nav-tabs" id="module-{$type}-tabs">
                     {if $type == 'installed'}
-                        <li class="active m-l-lg"><a href="#module-list" class="text-primary"
+                        <li class="active m-l-lg"><a href="#module-{$type}-list" class="text-primary"
                                                      data-toggle="tab">已安装（{$modules|count}）</a></li>
                     {elseif $type == 'upgradable'}
-                        <li class="active m-l-lg"><a href="#module-list" data-toggle="tab">可升级（{$modules|count}）</a>
+                        <li class="active m-l-lg"><a href="#module-{$type}-list" data-toggle="tab">可升级（{$modules|count}）</a>
                         </li>
                     {else}
-                        <li class="active m-l-lg"><a href="#module-list" data-toggle="tab">未安装（{$modules|count}）</a>
+                        <li class="active m-l-lg"><a href="#module-{$type}-list" data-toggle="tab">未安装（{$modules|count}）</a>
                         </li>
                     {/if}
-                    <li class="hidden" id="module-detail-tab">
-                        <a href="#module-detail" data-toggle="tab">模块详情</a>
+                    <li class="hidden" id="module-{$type}-detail-tab">
+                        <a href="#module-{$type}-detail" data-toggle="tab">模块详情</a>
                     </li>
                 </ul>
             </header>
             <section class="scrollable bg-white-only">
                 <div class="tab-content" style="height: 100%">
-                    <div class="tab-pane active" id="module-list" style="height: 100%">
+                    <div class="tab-pane active" id="module-{$type}-list" style="height: 100%">
                         <div class="table-responsive">
-                            <table id="core-module-table" data-table style="min-width: 600px">
+                            <table id="core-module-{$type}-table" data-table style="min-width: 600px">
                                 <thead>
                                 <tr>
                                     <th width="100">名称</th>
@@ -36,7 +36,7 @@
                                 {foreach $modules as $m}
                                     <tr data-field-gp="{$m.group}" class="{if $m.status == 0}text-muted{/if}">
                                         <td><a href="javascript:;" rel="{$m.namespace}"
-                                               class="module-name"><b>{$m.name}</b></a>
+                                               class="module-{$type}-name"><b>{$m.name}</b></a>
                                         </td>
                                         <td>{$m.desc|escape}</td>
                                         {if $type=='installed' || $type == 'upgradable'}
@@ -85,7 +85,7 @@
                             </table>
                         </div>
                     </div>
-                    <div class="tab-pane" style="height: 100%" id="module-detail" data-load data-lazy>
+                    <div class="tab-pane" style="height: 100%" id="module-{$type}-detail" data-load data-lazy>
 
                     </div>
                 </div>
@@ -98,7 +98,7 @@
                 <p>模块分组 ({$groups|count})</p>
             </header>
             <section class="hidden-xs scrollable m-t-xs">
-                <ul class="nav nav-pills nav-stacked no-radius" id="core-module-groups">
+                <ul class="nav nav-pills nav-stacked no-radius" id="core-module-{$type}-groups">
                     <li class="active">
                         <a href="javascript:;"> 全部 </a>
                     </li>
@@ -112,7 +112,7 @@
         </div>
     </aside>
     <script type="text/javascript">
-		var group = $('#core-module-groups');
+		var group = $('#core-module-{$type}-groups');
 		group.find('a').click(function () {
 			var me = $(this), mp = me.closest('li');
 			if (mp.hasClass('active')) {
@@ -120,18 +120,18 @@
 			}
 			group.find('li').not(mp).removeClass('active');
 			mp.addClass('active');
-			$('#core-module-table').wulatable('filter', 'gp', me.attr('rel'));
+			$('#core-module-{$type}-table').wulatable('filter', 'gp', me.attr('rel'));
 			return false;
 		});
-		$('#core-module-table').on('click', 'a.module-name', function () {
-			$('#module-detail-tab').removeClass('hidden').find('a').click();
-			$('#module-detail').data('load', '{"~core/module/detail/"|app}' + $(this).attr('rel')).reload();
+		$('#core-module-{$type}-table').on('click', 'a.module-{$type}-name', function () {
+			$('#module-{$type}-detail-tab').removeClass('hidden').find('a').click();
+			$('#module-{$type}-detail').data('load', '{"~core/module/detail/"|app}' + $(this).attr('rel')).reload();
 		});
-		$('#module-tabs').find('li.m-l-lg a').click(function () {
-			$('#module-detail-tab').addClass('hidden');
+		$('#module-{$type}-tabs').find('li.m-l-lg a').click(function () {
+			$('#module-{$type}-detail-tab').addClass('hidden');
 		});
-		$('#module-detail').on('ajax.error', function () {
-			$('#module-tabs').find('li.m-l-lg a').click();
+		$('#module-{$type}-detail').on('ajax.error', function () {
+			$('#module-{$type}-tabs').find('li.m-l-lg a').click();
 		});
     </script>
 </div>

@@ -196,7 +196,7 @@ class InstallController extends Controller {
 					$data['next']     = 3;
 					$data['progress'] = '20%';
 					$siteConfig       = @include CONFIG_PATH . 'install_config.php';
-					$modules          = ['core', 'dashboard', 'media', 'site', 'model', 'page'];
+					$modules          = ['core', 'dashboard', 'media', 'cms'];
 					if (isset($siteConfig['modules'])) {
 						$modules = array_merge($modules, (array)$siteConfig['modules']);
 					}

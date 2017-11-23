@@ -1,4 +1,4 @@
-<div class="bg-light">
+<div class="bg-light lter">
     <div class="wrapper-lg p-b-xs p-t-xs">
         <div class="row">
             <div class="col-md-3">
@@ -19,18 +19,18 @@
         </div>
     </div>
     <ul class="nav nav-tabs p-t-n-xs">
-        <li class="m-l-lg active"><a href="#module-doc" data-toggle="tab">文档</a></li>
-        <li class=""><a href="#module-changelog" data-toggle="tab">修改记录</a></li>
+        <li class="m-l-lg active"><a href="#module-{$module.namespace}-doc" data-toggle="tab">文档</a></li>
+        <li class=""><a href="#module-{$module.namespace}-changelog" data-toggle="tab">修改记录</a></li>
     </ul>
 </div>
 <div class="p-t-xs">
     <div class="tab-content">
-        <div class="tab-pane active" id="module-doc">
+        <div class="tab-pane active" id="module-{$module.namespace}-doc">
             <div class="markdown-body">
                 {$module.doc}
             </div>
         </div>
-        <div class="tab-pane" id="module-changelog">
+        <div class="tab-pane" id="module-{$module.namespace}-changelog">
             <div class="timeline" style="max-width: 600px;">
                 {foreach $changelogs as $vver => $log}
                     <div class="timeline-item {if $log@iteration%2==0}alt{/if}">
@@ -54,7 +54,7 @@
     </div>
     <script type="text/javascript">
 		requirejs(['highlight'], function () {
-			$('.markdown-body pre code').each(function (i, code) {
+			$('#module-{$module.namespace}-doc .markdown-body pre code').each(function (i, code) {
 				hljs.highlightBlock(code);
 			})
 		});

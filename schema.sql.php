@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-$tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `module` (
+$tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}module` (
     `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(32) NOT NULL COMMENT '模块ID',
     `version` VARCHAR(32) NOT NULL COMMENT '版本',
@@ -21,7 +21,7 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `module` (
     UNIQUE INDEX `UDX_NAME` (`name` ASC)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='模块表'";
 
-$tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `settings` (
+$tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}settings` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `group` VARCHAR(64) NOT NULL COMMENT '配置组',
     `name` VARCHAR(32) NOT NULL COMMENT '字段名',
@@ -30,7 +30,7 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `settings` (
     UNIQUE INDEX `UDX_NAME` (`group` ASC , `name` ASC)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='配置表'";
 
-$tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `role` (
+$tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}role` (
     `id` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(64) NOT NULL COMMENT '角色名称',
     `level` SMALLINT UNSIGNED NOT NULL DEFAULT 0 COMMENT '角色的Level',
@@ -39,7 +39,7 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `role` (
     UNIQUE INDEX `UDX_NAME` (`name` ASC)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='用户角色'";
 
-$tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `user` (
+$tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}user` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户ID',
     `username` VARCHAR(32) NOT NULL COMMENT '用户名',
     `nickname` VARCHAR(32) NULL COMMENT '昵称',
@@ -55,13 +55,13 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `user` (
     INDEX `IDX_STATUS` (`status` ASC)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='用户表'";
 
-$tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `user_role` (
+$tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}user_role` (
     `user_id` INT UNSIGNED NOT NULL,
     `role_id` SMALLINT UNSIGNED NOT NULL,
     PRIMARY KEY (`user_id` , `role_id`)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='用户角色表'";
 
-$tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `user_meta` (
+$tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}user_meta` (
     `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
     `user_id` INT UNSIGNED NOT NULL COMMENT '用户编号',
     `name` VARCHAR(32) NOT NULL COMMENT '数据名称',
@@ -71,7 +71,7 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `user_meta` (
     UNIQUE INDEX `UDX_USERMETA` (`user_id` ASC , `name` ASC)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='用户元数据'";
 
-$tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `acl` (
+$tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}acl` (
     `role_id` SMALLINT UNSIGNED NOT NULL COMMENT '角色ID',
     `res` VARCHAR(64) NOT NULL COMMENT '资源ID',
     `allowed` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '是否允许',
@@ -80,7 +80,7 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `acl` (
     UNIQUE INDEX `UDX_ROLE_RES` (`role_id` ASC , `res` ASC)
 )  ENGINE=INNODB DEFAULT CHARACTER SET={encoding} COMMENT='访问控制列表'";
 
-$tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `syslog` (
+$tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `{prefix}syslog` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `time` INT NOT NULL COMMENT '时间',
     `user_id` INT UNSIGNED NOT NULL COMMENT '用户ID',
@@ -94,7 +94,7 @@ $tables['1.0.0'][] = "CREATE TABLE IF NOT EXISTS `syslog` (
 
 $tables['1.0.0'][] = "INSERT INTO `role` (`id`,`name`,`note`) VALUES (2,'管理员','网站管理员'),(1,'站长','拥有所有权限')";
 
-$tables['1.1.0'][] = "CREATE TABLE `user_gridcfg` (
+$tables['1.1.0'][] = "CREATE TABLE `{prefix}user_gridcfg` (
   `uid` int(10) unsigned NOT NULL COMMENT '用户编号',
   `grid` varchar(48) NOT NULL COMMENT '表格ID',
   `columns` text COMMENT '显示列表',

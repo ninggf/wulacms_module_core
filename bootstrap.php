@@ -169,7 +169,7 @@ class CoreModule extends CmfModule {
 
 	public function getVersionList() {
 		$v['1.0.0'] = '初始化内核模块';
-		$v['1.1.0'] = '添加user_gridset表';
+		$v['1.1.0'] = '添加user_gridcfg表';
 
 		return $v;
 	}

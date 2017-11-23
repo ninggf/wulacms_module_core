@@ -1,6 +1,6 @@
 <section class="vbox">
-    <section class="scrollable bg-white wrapper">
-        <ul class="nav nav-tabs pull-in">
+    <section class="scrollable bg-white-only">
+        <ul class="nav nav-tabs p-t bg-light dk">
             <li class="active m-l-lg"><a href="#my-account-pane" data-toggle="tab">账户</a></li>
             <li><a href="#my-pwd-pane" data-toggle="tab">密码</a></li>
         </ul>

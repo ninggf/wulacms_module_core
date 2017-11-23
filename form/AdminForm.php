@@ -45,7 +45,9 @@ class AdminForm extends UserTable {
 	 * @type []
 	 * @layout   5,col-xs-12
 	 * @required 至少要选一个角色
-	 * @option {"inline":true,"dataSource":"wulaphp\\form\\providor\\TableDataProvidor","dsCfg":{"table":"role","orderBy":["id","asc"]}}
+	 * @option {"inline":1}
+	 * @see      \wulaphp\form\providor\TableDataProvidor
+	 * @dsCfg {"table":"role","orderBy":["id","asc"]}
 	 */
 	public $roles;
 
