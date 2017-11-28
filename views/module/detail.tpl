@@ -1,7 +1,7 @@
 <div class="bg-light lter">
     <div class="wrapper-lg p-b-xs p-t-xs">
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-5">
                 <h6 class="m-b-xs">名称</h6>
                 <p class="text-xxl m-b-none"><i class="fa fa-puzzle-piece text-warning"></i> {$module.name}</p>
                 {if $module.home}
@@ -12,7 +12,7 @@
                 <h6 class="m-b-xs">当前版本</h6>
                 <p class="text-xxl">{$module.ver}</p>
             </div>
-            <div class="col-md-7">
+            <div class="col-md-5">
                 <h6 class="m-b-xs">作者</h6>
                 <p class="text-xxl">{$module.author}</p>
             </div>

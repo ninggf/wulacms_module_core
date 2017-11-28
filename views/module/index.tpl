@@ -25,7 +25,7 @@
                             <table id="core-module-{$type}-table" data-table style="min-width: 600px">
                                 <thead>
                                 <tr>
-                                    <th width="100">名称</th>
+                                    <th width="160">名称</th>
                                     <th>描述</th>
                                     <th width="100">版本</th>
                                     <th width="120">作者</th>
